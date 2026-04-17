@@ -13,7 +13,7 @@ full match with physics, AI, video cutscenes, and a smash mini-game.
 ## ✨ Features
 
 - 🎯 **Player Selection** — Choose from Jannik Sinner, Carlos Alcaraz, or Daniil Medvedev
-- 🧠 **Memory Mini-Game** — Your completion speed determines opponent difficulty
+- 🧠 **Memory Mini-Game** — Your completion speed determines opponent
 - 🎾 **Full Tennis Scoring** — Points, games, sets, deuce, and advantage logic
 - 🎬 **Video Cutscenes** — Real match clips on set wins and championship wins
 - ⚡ **Smash Mini-Game** — Press SPACE ×3 during smash opportunities
@@ -79,20 +79,14 @@ texture via Raylib, and synced with a `.mp3` audio stream — all in real time.
 ## 🛠️ Requirements
 
 - C++17 or later
-- [Raylib](https://www.raylib.com/) installed and linked
+- [Raylib](https://www.raylib.com/) installed and linked at C:/raylib
 - `pl_mpeg.h` included (single-header, already in repo)
 
 ---
 
 ## ⚙️ Build & Run
 
-### Compile with g++
-
-```bash
-g++ src/main.cpp -o tennis.exe -IC:\raylib\include -LC:\raylib\lib -lraylib -lopengl32 -lgdi32 -lwinmm ; .\tennis.exe
-```
-
-### Or use Make
+### Use Make
 
 ```bash
 make
