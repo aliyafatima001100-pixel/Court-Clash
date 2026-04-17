@@ -1,6 +1,3 @@
-// ============================================================
-// FINAL TENNIS GAME – All Bugs Fixed
-// ============================================================
 
 #include "raylib.h"
 #include "raymath.h"
@@ -167,7 +164,7 @@ public:
     void draw() override {
         DrawTexturePro(menuBackground, {0,0,(float)menuBackground.width,(float)menuBackground.height},
                        {0,0,(float)WINDOW_WIDTH,(float)WINDOW_HEIGHT}, {0,0}, 0, WHITE);
-        DrawText("TENNIS CHAMPIONSHIP", WINDOW_WIDTH/2 - 200, WINDOW_HEIGHT/2 - 50, 40, GOLD);
+        DrawText("Court Clash", WINDOW_WIDTH/2 - 200, WINDOW_HEIGHT/2 - 50, 40, GOLD);
         DrawText("PRESS SPACE TO START", WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT/2 + 50, 20, RAYWHITE);
     }
 };
@@ -1056,17 +1053,17 @@ public:
     static bool       resumeValid;
 
     TennisGameScene(bool resume=false) : rng(time(nullptr)){
-        runFrames[0]=LoadTexture("sprite_0.png");
-        runFrames[1]=LoadTexture("sprite_1.png");
-        runFrames[2]=LoadTexture("sprite_2.png");
-        runFrames[3]=LoadTexture("sprite_3.png");
-        idleFront   =LoadTexture("sprite_4.png");
-        idleBack    =LoadTexture("sprite_6.png");
-        servePose   =LoadTexture("sprite_5.png");
-        hitRun      =LoadTexture("sprite_3_hit.png");
-        hitIdleFront=LoadTexture("sprite_4_hit.png");
-        hitIdleBack =LoadTexture("sprite_6_hit.png");
-        hitServe    =LoadTexture("sprite_5_hit.png");
+        runFrames[0]=LoadTexture("assets/images/sprite_0.png");
+        runFrames[1]=LoadTexture("assets/images/sprite_1.png");
+        runFrames[2]=LoadTexture("assets/images/sprite_2.png");
+        runFrames[3]=LoadTexture("assets/images/sprite_3.png");
+        idleFront   =LoadTexture("assets/images/sprite_4.png");
+        idleBack    =LoadTexture("assets/images/sprite_6.png");
+        servePose   =LoadTexture("assets/images/sprite_5.png");
+        hitRun      =LoadTexture("assets/images/sprite_3_hit.png");
+        hitIdleFront=LoadTexture("assets/images/sprite_4_hit.png");
+        hitIdleBack =LoadTexture("assets/images/sprite_6_hit.png");
+        hitServe    =LoadTexture("assets/images/sprite_5_hit.png");
         courtTexture=LoadTexture("assets/images/tennis_court.png");
         clearTrail(); initCourt();
 
@@ -1794,9 +1791,6 @@ public:
 };
 
 // ============================================================
-// RULES SCENE
-// ============================================================
-// ============================================================
 // MEMORY RULES SCENE
 // ============================================================
 class MemoryRulesScene : public Scene {
@@ -1870,7 +1864,7 @@ changeScene(new MemoryRulesScene());
 // ============================================================
 int main(){
     InitWindow(1920,1080,"Tennis Game");
-    InitAudioDevice();                      // <-- add this
+    InitAudioDevice();                     
     SetTargetFPS(60);
     WINDOW_WIDTH=GetScreenWidth(); WINDOW_HEIGHT=GetScreenHeight();
     ToggleFullscreen();
@@ -1888,7 +1882,7 @@ int main(){
 
     if(currentScene) delete currentScene;
     UnloadTexture(menuBackground);
-    CloseAudioDevice();                     // <-- add this
+    CloseAudioDevice();                     
     CloseWindow();
     return 0;
 }
