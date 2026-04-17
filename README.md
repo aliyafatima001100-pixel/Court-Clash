@@ -4,7 +4,7 @@ A feature-rich 2D tennis simulation game built in C++ using the Raylib library.
 Choose a real-world tennis pro, outsmart a memory mini-game, and compete in a 
 full match with physics, AI, video cutscenes, and a smash mini-game.
 
-#🎥 Video Showcase
+## 🎥 Video Showcase
 
 <p align="center">
   <img src="assets/demo/gameplay.gif" width="700"/>
