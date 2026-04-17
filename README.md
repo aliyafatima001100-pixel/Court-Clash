@@ -9,7 +9,9 @@ full match with physics, AI, video cutscenes, and a smash mini-game.
 <p align="center">
   <img src="assets/demo/gameplay.gif" width="700"/>
 </p>
+
 ---
+
 ## 🎥 Demo
 
 [▶ Watch Gameplay on Google Drive](https://drive.google.com/file/d/1NvI5YGaPl_L31pG5x8NWtRdjum1sgGnP/view?usp=sharing)
