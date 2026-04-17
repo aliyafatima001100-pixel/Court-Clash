@@ -6,8 +6,9 @@ full match with physics, AI, video cutscenes, and a smash mini-game.
 
 ## 🎥 Video Showcase (may take a few seconds)
 
-<video src="assets/demo/gameplay.mp4" width="700" autoplay loop muted></video>
-
+<p align="center">
+  <img src="assets/demo/gameplay.gif" width="700"/>
+</p>
 ---
 ## 🎥 Demo
 
