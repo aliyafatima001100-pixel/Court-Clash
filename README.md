@@ -106,6 +106,7 @@ make run
 
 ## 📁 Project Structure
 
+```text
 Court-Clash/
 ├── src/
 │   └── main.cpp
@@ -119,6 +120,7 @@ Court-Clash/
 ├── README.md
 ├── raylib.h
 └── raymath.h
+```
 
 ---
 
@@ -128,8 +130,4 @@ Court-Clash/
 
 ---
 
-## 🎥 Demo
 
-[▶ Watch Gameplay on Google Drive](https://drive.google.com/file/d/1NvI5YGaPl_L31pG5x8NWtRdjum1sgGnP/view?usp=sharing)
-
----
