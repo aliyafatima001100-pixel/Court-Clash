@@ -99,9 +99,6 @@ make
 make run
 ```
 
-> ⚠️ Asset paths are hardcoded to `D:/oop/`. Place your assets there,
-> or update the paths in `src/main.cpp` before compiling.
-
 ---
 
 ## 📁 Project Structure

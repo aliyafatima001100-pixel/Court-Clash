@@ -35,25 +35,25 @@ struct ClipInfo {
 
 static const ClipInfo CHAMP_WIN_CLIPS[3][3] = {
     { {"", "", "",0}, 
-      {"", "D:/oop/sinner_wins_carlos.mpg", "D:/oop/sinner_wins_carlos.mp3", 0}, 
-      {"", "D:/oop/sinner_wins_med.mpg",    "D:/oop/sinner_wins_med.mp3",    0} },
-    { {"", "D:/oop/carlos_wins_sinner.mpg", "D:/oop/carlos_wins_sinner.mp3", 0}, 
+      {"", "assets/videos/sinner_wins_carlos.mpg", "assets/videos/sinner_wins_carlos.mp3", 0}, 
+      {"", "assets/videos/sinner_wins_med.mpg",    "assets/videos/sinner_wins_med.mp3",    0} },
+    { {"", "assets/videos/carlos_wins_sinner.mpg", "assets/videos/carlos_wins_sinner.mp3", 0}, 
       {"", "", "",0}, 
-      {"", "D:/oop/carlos_wins_med.mpg",    "D:/oop/carlos_wins_med.mp3",    0} },
-    { {"", "D:/oop/med_wins_sinner.mpg",    "D:/oop/med_wins_sinner.mp3",    0}, 
-      {"", "D:/oop/med_wins_carlos.mpg",    "D:/oop/med_wins_carlos.mp3",    0}, 
+      {"", "assets/videos/carlos_wins_med.mpg",    "assets/videos/carlos_wins_med.mp3",    0} },
+    { {"", "assets/videos/med_wins_sinner.mpg",    "assets/videos/med_wins_sinner.mp3",    0}, 
+      {"", "assets/videos/med_wins_carlos.mpg",    "assets/videos/med_wins_carlos.mp3",    0}, 
       {"", "", "",0} },
 };
 
 static const ClipInfo SET_WIN_CLIPS[3][3] = {
     { {"", "", "", 0}, 
-      {"", "D:/oop/sinner_set.mpg", "D:/oop/sinner_set.mp3", 0}, 
-      {"", "D:/oop/sinner_set.mpg", "D:/oop/sinner_set.mp3", 0} },
-    { {"", "D:/oop/carlos_set.mpg", "D:/oop/carlos_set.mp3", 0}, 
+      {"", "assets/videos/sinner_set.mpg", "assets/videos/sinner_set.mp3", 0}, 
+      {"", "assets/videos/sinner_set.mpg", "assets/videos/sinner_set.mp3", 0} },
+    { {"", "assets/videos/carlos_set.mpg", "assets/videos/carlos_set.mp3", 0}, 
       {"", "", "", 0}, 
-      {"", "D:/oop/carlos_set.mpg", "D:/oop/carlos_set.mp3", 0} },
-    { {"", "D:/oop/med_set.mpg", "D:/oop/med_set.mp3", 0}, 
-      {"", "D:/oop/med_set.mpg", "D:/oop/med_set.mp3", 0}, 
+      {"", "assets/videos/carlos_set.mpg", "assets/videos/carlos_set.mp3", 0} },
+    { {"", "assets/videos/med_set.mpg", "assets/videos/med_set.mp3", 0}, 
+      {"", "assets/videos/med_set.mpg", "assets/videos/med_set.mp3", 0}, 
       {"", "", "", 0} },
 };
 
@@ -93,7 +93,7 @@ class PlayerSelectScene : public Scene {
 
 public:
     PlayerSelectScene() {
-        bg = LoadTexture("D:/oop/menu_page.png");
+        bg = LoadTexture("assets/images/menu_page.png");
     }
     ~PlayerSelectScene() {
         UnloadTexture(bg);
@@ -1067,7 +1067,7 @@ public:
         hitIdleFront=LoadTexture("sprite_4_hit.png");
         hitIdleBack =LoadTexture("sprite_6_hit.png");
         hitServe    =LoadTexture("sprite_5_hit.png");
-        courtTexture=LoadTexture("D:/oop/tennis_court.png");
+        courtTexture=LoadTexture("assets/images/tennis_court.png");
         clearTrail(); initCourt();
 
         if(resume && resumeValid){
@@ -1570,7 +1570,7 @@ bool                        TennisGameScene::resumeValid = false;
 class TennisRulesScene : public Scene {
     Texture2D bg;
 public:
-    TennisRulesScene() { bg = LoadTexture("D:/oop/bkgrnd.png"); }
+    TennisRulesScene() { bg = LoadTexture("assets/images/bkgrnd.png"); }
     ~TennisRulesScene() { UnloadTexture(bg); }
     void update() override {
         if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE)) {
@@ -1620,7 +1620,7 @@ class MatchupScene : public Scene {
     float timer=0;
     Texture2D bg;
 public:
-    MatchupScene(){ bg=LoadTexture("D:/oop/bkgrnd.png"); }
+    MatchupScene(){ bg=LoadTexture("assets/images/bkgrnd.png"); }
     ~MatchupScene(){ UnloadTexture(bg); }
     void update() override {
         timer+=GetFrameTime();
@@ -1705,11 +1705,11 @@ class MemoryGameScene : public Scene {
     }
 public:
     MemoryGameScene(int dummy=0){
-        backTexture   =LoadTexture("D:/oop/card_flip.jpg");
-        player0       =LoadTexture("D:/oop/jannik_flip.jpg");
-        player1       =LoadTexture("D:/oop/carlos_flip.jpg");
-        player2       =LoadTexture("D:/oop/daniil_flip.jpg");
-        gameBackground=LoadTexture("D:/oop/bkgrnd_image.jpg");
+        backTexture   =LoadTexture("assets/images/card_flip.jpg");
+        player0       =LoadTexture("assets/images/jannik_flip.jpg");
+        player1       =LoadTexture("assets/images/carlos_flip.jpg");
+        player2       =LoadTexture("assets/images/daniil_flip.jpg");
+        gameBackground=LoadTexture("assets/images/bkgrnd_image.jpg");
         vector<Texture2D> fronts={player0,player1,player2};
         layoutCards(fronts);
         first=second=nullptr; waiting=false; gameWon=false; winTimer=0; totalTime=0;
@@ -1802,7 +1802,7 @@ public:
 class MemoryRulesScene : public Scene {
     Texture2D bg;
 public:
-    MemoryRulesScene() { bg = LoadTexture("D:/oop/bkgrnd.png"); }
+    MemoryRulesScene() { bg = LoadTexture("assets/images/bkgrnd.png"); }
     ~MemoryRulesScene() { UnloadTexture(bg); }
     void update() override {
         if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE)) {
@@ -1875,7 +1875,7 @@ int main(){
     WINDOW_WIDTH=GetScreenWidth(); WINDOW_HEIGHT=GetScreenHeight();
     ToggleFullscreen();
     WINDOW_WIDTH=GetScreenWidth(); WINDOW_HEIGHT=GetScreenHeight();
-    menuBackground=LoadTexture("D:/oop/menu_page.png");
+    menuBackground=LoadTexture("assets/images/menu_page.png");
     currentScene=new MenuScene();
 
     while(!WindowShouldClose()){
