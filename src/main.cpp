@@ -1,4 +1,3 @@
-
 #include "raylib.h"
 #include "raymath.h"
 #include <vector>
@@ -9,12 +8,41 @@
 #include <cmath>
 #include <cstdio>
 #include <functional>
+#include <stack>
+#include <stdexcept>
 #define PL_MPEG_IMPLEMENTATION
 #include "pl_mpeg.h"
+
+// ============================================================
+// EXCEPTION HANDLING (Advanced C++ Feature)
+// ============================================================
+class FileLoadException : public std::runtime_error {
+public:
+    FileLoadException(const std::string& msg)
+        : std::runtime_error("Resource Error: " + msg) {}
+};
+
+// ============================================================
+// TEMPLATE SORTING FUNCTION (Advanced C++ Feature)
+// Works on any vector whose elements have a .getId() method
+// ============================================================
+template <typename T>
+void SelectionSort(std::vector<T>& arr) {
+    int n = (int)arr.size();
+    for (int i = 0; i < n - 1; i++) {
+        int min_idx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j].getId() < arr[min_idx].getId())
+                min_idx = j;
+        }
+        std::swap(arr[min_idx], arr[i]);
+    }
+}
 
 using namespace std;
 int g_humanPlayer = 1; // 0=Sinner, 1=Carlos, 2=Medvedev
 int g_cpuPlayer   = 0;
+bool g_isHardMode = false;
 int WINDOW_WIDTH;
 int WINDOW_HEIGHT;
 Texture2D menuBackground;
@@ -24,10 +52,10 @@ static const char* SHORT_NAMES[3]  = {"Sinner", "Carlos", "Medvedev"};
 static const int   WORLD_RANKS[3]  = {2, 1, 10};
 
 struct ClipInfo { 
-    const char* folder;     // not used anymore (can be empty)
+    const char* folder;    
     const char* videoPath;  // path to .mpg file
     const char* audioPath;  // path to .mp3 file
-    int frames;             // not used (kept for compatibility)
+    int frames;             
 };
 
 static const ClipInfo CHAMP_WIN_CLIPS[3][3] = {
@@ -55,7 +83,7 @@ static const ClipInfo SET_WIN_CLIPS[3][3] = {
 };
 
 // ============================================================
-// Scene base
+// Scene base  (Abstract Class with pure virtual functions)
 // ============================================================
 class Scene {
 public:
@@ -63,10 +91,33 @@ public:
     virtual void draw()   = 0;
     virtual ~Scene() {}
 };
-Scene* currentScene = nullptr;
+
+// ============================================================
+// SCENE MANAGER using std::stack (Data Structure)
+// ============================================================
+std::stack<Scene*> sceneStack;
+
+void pushScene(Scene* newScene) {
+    sceneStack.push(newScene);
+}
+
+void popScene() {
+    if (!sceneStack.empty()) {
+        delete sceneStack.top();
+        sceneStack.pop();
+    }
+}
+
+// Recursive function to clear all scenes (Recursion Algorithm)
+void clearScenesRecursive() {
+    if (sceneStack.empty()) return;
+    popScene();
+    clearScenesRecursive();
+}
+
 void changeScene(Scene* newScene) {
-    if (currentScene) delete currentScene;
-    currentScene = newScene;
+    clearScenesRecursive();
+    pushScene(newScene);
 }
 
 // Forward declarations
@@ -310,29 +361,53 @@ public:
 };
 // ============================================================
 // Card (memory game)
+// Encapsulation: private members with getters/setters
+// Operator Overloading: operator== for matching logic
 // ============================================================
 class Card {
+private:
+    int id;
+    bool flipped;
+    bool matched;
+
 public:
+    // Public rendering/layout data (fine to expose for raylib drawing)
     Texture2D front, back;
     Vector2 position;
     float cardW=260, cardH=360;
-    bool isFlipped=false, isMatched=false;
     float scaleX=1.0f;
     bool isAnimating=false, showFront=false;
-    int id;
+
+    // Default constructor needed for vector usage
+    Card() : id(0), flipped(false), matched(false) {}
+    Card(int _id) : id(_id), flipped(false), matched(false) {}
+
+    // Getters
+    int  getId()      const { return id; }
+    bool isFlipped()  const { return flipped; }
+    bool isMatched()  const { return matched; }
+
+    // Setters
+    void setId(int _id)        { id = _id; }
+    void setMatched(bool m)    { matched = m; }
+
+    // Operator Overloading: two cards are equal if they have the same id
+    bool operator==(const Card& other) const {
+        return this->id == other.id;
+    }
 
     Rectangle getRect(){ return {position.x, position.y, cardW, cardH}; }
     bool isClicked(Vector2 m){ return CheckCollisionPointRec(m, getRect()); }
 
     void flip(){
-        if (!isAnimating && !isMatched) { isFlipped = !isFlipped; isAnimating = true; }
+        if (!isAnimating && !matched) { flipped = !flipped; isAnimating = true; }
     }
 
     void update(){
         if (!isAnimating) return;
-        if (!showFront == isFlipped) {
+        if (!showFront == flipped) {
             scaleX -= 0.06f;
-            if (scaleX <= 0) { scaleX = 0; showFront = isFlipped; }
+            if (scaleX <= 0) { scaleX = 0; showFront = flipped; }
         } else {
             scaleX += 0.06f;
             if (scaleX >= 1) { scaleX = 1; isAnimating = false; }
@@ -732,6 +807,9 @@ private:
             uniform_real_distribution<float> yV(pTop+80, pNet-90);
             targetX=xV(rng); targetY=yV(rng);
             speed=300.0f+(float)(r*12);
+            if (g_isHardMode) speed += 60.0f; // Hard mode hits faster shots
+            else speed -= 50.0f;              // Easy mode hits softer, loopier shots
+            
             lob=0.38f+r*0.025f; drag=0.15f; spin=0.2f; stype=SHOT_NORMAL;
         }
         lastShotType=stype;
@@ -873,7 +951,8 @@ void scorePoint(int scorer) {
     void movePlayer(Player& pl, Vector2 tgt, float dt, bool ai,
                     float minY, float maxY, float speedOverride=-1.0f)
     {
-        float spd = (speedOverride>0) ? speedOverride : (ai ? 355.0f : 700.0f);
+        float baseAiSpeed = g_isHardMode ? 420.0f : 280.0f; // Fast on hard, sluggish on easy
+        float spd = (speedOverride>0) ? speedOverride : (ai ? baseAiSpeed : 700.0f);
         pl.prevX=pl.x; pl.prevY=pl.y;
         Vector2 d={tgt.x-pl.x, tgt.y-pl.y};
         float dist=sqrtf(d.x*d.x+d.y*d.y);
@@ -1504,6 +1583,7 @@ if(ballPos.y>=pNet && ballVel.y>0 && lastHitter!=2 && ballInPlay){
             float cpuMaxZ=canVolley?120.0f:68.0f;
             // For smashes, use a larger detection radius (180 vs 130)
             float hitDist = (lastShotType == SHOT_SMASH) ? 180.0f : 130.0f;
+            if (!g_isHardMode) hitDist -= 40.0f; // Easy mode has shorter reach, causing more "whiffs"
             if(dist < hitDist && ballZ < cpuMaxZ){
                 cpuHitShot();
             }
@@ -1679,10 +1759,13 @@ class MemoryGameScene : public Scene {
         cards.clear();
         for(size_t i=0;i<fronts.size();i++){
             for(int j=0;j<2;j++){
-                Card c; c.front=fronts[i]; c.back=backTexture; c.id=(int)i;
+                Card c((int)i);
+                c.front=fronts[i]; c.back=backTexture;
                 cards.push_back(c);
             }
         }
+        // SelectionSort before shuffle (Sorting Algorithm + Template usage)
+        SelectionSort(cards);
         mt19937 rng2(time(0));
         shuffle(cards.begin(),cards.end(),rng2);
         float cW=260,cH=360,sX=80,sY=100;
@@ -1696,7 +1779,7 @@ class MemoryGameScene : public Scene {
             float rowXi=(WINDOW_WIDTH-rowWi)/2;
             cards[i].position={rowXi+col*(cW+sX),stY+row*(cH+sY)};
             cards[i].cardW=cW; cards[i].cardH=cH;
-            cards[i].isFlipped=cards[i].isMatched=false;
+            cards[i].setMatched(false);
             cards[i].showFront=false; cards[i].scaleX=1.0f; cards[i].isAnimating=false;
         }
     }
@@ -1736,8 +1819,10 @@ public:
         // 3. Under 10s = Weaker opponent. Over 10s = Stronger opponent.
         if (totalTime <= 10.0f) {
             g_cpuPlayer = weaker;
+            g_isHardMode = false;
         } else {
             g_cpuPlayer = stronger;
+            g_isHardMode = true;
         }
         
         changeScene(new MatchupScene());
@@ -1755,12 +1840,13 @@ public:
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
             Vector2 mouse=GetMousePosition();
             for(auto& c:cards){
-                if(c.isClicked(mouse)&&!c.isFlipped&&!c.isMatched){
+                if(c.isClicked(mouse)&&!c.isFlipped()&&!c.isMatched()){
                     c.flip();
                     if(!first) first=&c;
                     else if(!second&&&c!=first){
                         second=&c;
-                        if(first->id==second->id){ first->isMatched=second->isMatched=true; first=second=nullptr; }
+                        // Operator== used here for matching
+                        if(*first==*second){ first->setMatched(true); second->setMatched(true); first=second=nullptr; }
                         else{ waiting=true; flipBackTimer=0; }
                     }
                     break;
@@ -1768,7 +1854,7 @@ public:
             }
         }
         bool allMatched=true;
-        for(auto& c:cards) if(!c.isMatched){ allMatched=false; break; }
+        for(auto& c:cards) if(!c.isMatched()){ allMatched=false; break; }
         if(allMatched&&!gameWon){ gameWon=true; winTimer=0; }
     }
     void draw() override {
@@ -1790,6 +1876,9 @@ public:
     }
 };
 
+// ============================================================
+// RULES SCENE
+// ============================================================
 // ============================================================
 // MEMORY RULES SCENE
 // ============================================================
@@ -1869,18 +1958,30 @@ int main(){
     WINDOW_WIDTH=GetScreenWidth(); WINDOW_HEIGHT=GetScreenHeight();
     ToggleFullscreen();
     WINDOW_WIDTH=GetScreenWidth(); WINDOW_HEIGHT=GetScreenHeight();
-    menuBackground=LoadTexture("assets/images/menu_page.png");
-    currentScene=new MenuScene();
+
+    // Exception Handling on resource load
+    try {
+        menuBackground=LoadTexture("assets/images/menu_page.png");
+        if (menuBackground.id <= 0)
+            throw FileLoadException("Failed to load menu_page.png");
+    } catch (const FileLoadException& e) {
+        printf("%s\n", e.what());
+        // Continue with a blank texture as fallback — game still runs
+    }
+
+    pushScene(new MenuScene());
 
     while(!WindowShouldClose()){
         WINDOW_WIDTH=GetScreenWidth(); WINDOW_HEIGHT=GetScreenHeight();
-        currentScene->update();
-        BeginDrawing();
-        currentScene->draw();
-        EndDrawing();
+        if (!sceneStack.empty()) {
+            sceneStack.top()->update();
+            BeginDrawing();
+            sceneStack.top()->draw();
+            EndDrawing();
+        }
     }
 
-    if(currentScene) delete currentScene;
+    clearScenesRecursive();
     UnloadTexture(menuBackground);
     CloseAudioDevice();                     
     CloseWindow();
