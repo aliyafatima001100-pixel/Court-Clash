@@ -89,7 +89,7 @@ texture via Raylib, and synced with a `.mp3` audio stream — all in real time.
 ### Compile with g++
 
 ```bash
-g++ main.cpp -o tennis.exe -IC:\raylib\include -LC:\raylib\lib -lraylib -lopengl32 -lgdi32 -lwinmm ; .\tennis.exe
+g++ src/main.cpp -o tennis.exe -IC:\raylib\include -LC:\raylib\lib -lraylib -lopengl32 -lgdi32 -lwinmm ; .\tennis.exe
 ```
 
 ### Or use Make
