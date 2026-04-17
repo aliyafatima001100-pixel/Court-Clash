@@ -111,9 +111,8 @@ Court-Clash/
 │   └── main.cpp
 ├── assets/
 │   ├── images/
-│   ├── videos/
-│   └── demo/
-│       └── gameplay.gif
+│   └── videos/
+│    
 ├── pl_mpeg.h
 ├── Makefile
 ├── README.md
